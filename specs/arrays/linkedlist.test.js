@@ -25,64 +25,81 @@
 
 class LinkedList {
   constructor() {
-    this.head = null;
-    this.tail = null;
+    this.head = this.tail = null;
     this.length = 0;
   }
+
   push(value) {
     const node = new Node(value);
-    this.length++;
     if (!this.head) {
       this.head = node;
     } else {
       this.tail.next = node;
     }
-    this.tail = node;
-  }
-  pop() {
-    return this.delete(this.length - 1);
-  }
-  _find(index) {
-    if (index >= this.length) return null;
-    let current = this.head;
-    for (let i = 0; i < index; i++) {
-      current = current.next;
-    }
 
-    return current;
+    this.tail = node;
+
+    this.length++;
   }
+
+  traverse(index) {
+    let node = this.head;
+    for (let i = 0; i < index; i++) {
+      node = node.next;
+    }
+    return node;
+  }
+
   get(index) {
-    const node = this._find(index);
-    if (!node) return void 0;
-    return node.value;
+    return this.traverse(index).value;
   }
+
+  pop() {
+    let val;
+    if (!this.head) return null;
+    if (this.head == this.tail) {
+      val = this.head.value;
+      this.head = this.tail = null;
+    }
+    const parentNode = this.traverse(this.length - 2);
+    val = parentNode.next.value;
+    parentNode.next = null;
+
+    this.length--;
+
+    return val;
+  }
+
   delete(index) {
-    if (index === 0) {
-      const head = this.head;
-      if (head) {
-        this.head = head.next;
+    let val;
+
+    if (index == 0) {
+      val = this.head.val;
+      if (this.head) {
+        this.head = this.head.next;
       } else {
         this.head = null;
-        this.tail = null;
       }
-      this.length--;
-      return head.value;
     }
 
-    const node = this._find(index - 1);
-    const excise = node.next;
-    if (!excise) return null;
-    node.next = excise.next;
-    if (!node.next) this.tail = node.next;
+    let parentNode = this.traverse(index - 1);
+    val = parentNode.next.value;
+    parentNode.next = parentNode.next.next;
+
+    if (!parentNode.next) {
+      this.tail = parentNode;
+    }
+
     this.length--;
-    return excise.value;
+
+    return val;
   }
 }
 
 class Node {
   constructor(value) {
-    this.value = value;
     this.next = null;
+    this.value = value;
   }
 }
 
